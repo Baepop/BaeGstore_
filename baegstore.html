@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BaegStore_ — Juegos para Steam</title>
+<meta name="description" content="Juegos importados directo a tu biblioteca de Steam. 100% garantizados y permanentes.">
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cyan:#00e5ff;
+  --orange:#ff8c00;
+  --cyan-glow:0 0 10px #00e5ff, 0 0 30px rgba(0,229,255,0.4);
+  --orange-glow:0 0 10px #ff8c00, 0 0 30px rgba(255,140,0,0.4);
+  --dark:#070a0e;
+  --dark2:#0a0e14;
+  --dark3:#0e1520;
+  --card:#0c1119;
+  --border:#1a2535;
+  --border-cyan:rgba(0,229,255,0.25);
+  --border-orange:rgba(255,140,0,0.25);
+  --text:#ccdde8;
+  --text-dim:#4a6a80;
+  --green:#00ff88;
+  --red:#ff3d5a;
+  --cupo:#a855f7;
+  --bg:var(--dark);
+  --surface:var(--card);
+  --surface2:var(--dark3);
+}
+[data-theme="light"] {
+  --bg:#eef2f7; --surface:#ffffff; --surface2:#e2e8f0;
+  --border:#c5d5e5; --border-cyan:rgba(0,180,200,0.3);
+  --text:#0f1e2e; --text-dim:#6a8aaa;
+  --dark2:#ffffff; --dark3:#e2e8f0; --card:#ffffff;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body {
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Exo 2',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* Circuit grid background */
+[data-theme="dark"] body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+  background-size:48px 48px;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* Circuit dots at intersections */
+[data-theme="dark"] body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:radial-gradient(circle, rgba(0,229,255,0.08) 1px, transparent 1px);
+  background-size:48px 48px;
+  background-position:0 0;
+  pointer-events:none;
+  z-index:0;
+}
+
+.orb {position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;}
+.orb1{width:500px;height:500px;background:rgba(0,229,255,0.05);top:-150px;left:-100px;}
+.orb2{width:400px;height:400px;background:rgba(255,140,0,0.04);bottom:100px;right:-100px;}
+.orb3{width:300px;height:300px;background:rgba(0,229,255,0.03);top:50%;left:50%;transform:translate(-50%,-50%);}
+[data-theme="light"] .orb{display:none;}
+
+/* ── HEADER ── */
+header {
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;
+  border-bottom:1px solid var(--border);
+  background:rgba(7,10,14,0.97);
+  backdrop-filter:blur(20px);
+  gap:8px;
+}
+[data-theme="light"] header{background:rgba(238,242,247,0.97);}
+@media(min-width:640px){header{padding:12px 32px;}}
+
+.logo-area{display:flex;align-items:center;gap:10px;}
+
+/* Logo circle — dual color gradient ring */
+.logo-ring {
+  width:44px;height:44px;border-radius:50%;
+  background:conic-gradient(var(--cyan) 0deg 180deg, var(--orange) 180deg 360deg);
+  padding:2px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  box-shadow:var(--cyan-glow);
+  animation:spinGlow 8s linear infinite;
+}
+.logo-ring-inner {
+  width:100%;height:100%;border-radius:50%;
+  background:var(--dark2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.85rem;font-weight:900;
+  color:var(--cyan);letter-spacing:-1px;
+}
+@keyframes spinGlow {
+  0%{box-shadow:var(--cyan-glow);}
+  50%{box-shadow:var(--orange-glow);}
+  100%{box-shadow:var(--cyan-glow);}
+}
+
+.logo-text-group{}
+.logo-name {
+  font-family:'Exo 2',sans-serif;font-weight:900;font-size:1.1rem;
+  letter-spacing:1px;line-height:1;
+  color:var(--text);
+}
+.logo-name .ba{color:var(--cyan);}
+.logo-name .eg{color:var(--orange);}
+.logo-name .store{color:var(--text);font-size:0.65rem;letter-spacing:3px;display:block;text-transform:uppercase;margin-top:1px;font-weight:500;font-family:'Share Tech Mono',monospace;}
+
+.header-right{display:flex;align-items:center;gap:8px;}
+
+.icon-btn {
+  background:var(--surface2);
+  border:1px solid var(--border);
+  color:var(--text-dim);
+  width:36px;height:36px;border-radius:6px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:1rem;transition:all 0.2s;flex-shrink:0;
+}
+.icon-btn:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 8px rgba(0,229,255,0.3);}
+
+.cart-btn {
+  background:linear-gradient(135deg, rgba(0,229,255,0.1), rgba(255,140,0,0.05));
+  border:1px solid var(--border-cyan);
+  color:var(--text);
+  padding:8px 14px;border-radius:6px;
+  font-family:'Exo 2',sans-serif;font-weight:700;font-size:0.88rem;
+  cursor:pointer;display:flex;align-items:center;gap:8px;
+  transition:all 0.2s;white-space:nowrap;
+}
+.cart-btn:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 12px rgba(0,229,255,0.2);}
+.cart-count {
+  background:linear-gradient(135deg, var(--cyan), var(--orange));
+  color:#070a0e;border-radius:4px;
+  width:20px;height:20px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.65rem;font-weight:900;
+  font-family:'Share Tech Mono',monospace;
+}
+
+/* ── HERO ── */
+.hero {
+  position:relative;z-index:1;
+  text-align:center;padding:40px 20px 20px;
+}
+@media(min-width:640px){.hero{padding:60px 20px 24px;}}
+
+.hero-eyebrow {
+  font-family:'Share Tech Mono',monospace;
+  font-size:0.72rem;letter-spacing:4px;
+  color:var(--orange);text-transform:uppercase;
+  margin-bottom:16px;
+  opacity:0;animation:fadeUp 0.6s 0.1s forwards;
+}
+.hero h1 {
+  font-family:'Exo 2',sans-serif;font-weight:900;
+  font-size:clamp(2rem,6vw,3.5rem);
+  line-height:1.05;margin-bottom:14px;
+  opacity:0;animation:fadeUp 0.6s 0.2s forwards;
+}
+.hero h1 .hl-cyan{color:var(--cyan);text-shadow:var(--cyan-glow);}
+.hero h1 .hl-orange{color:var(--orange);text-shadow:var(--orange-glow);}
+
+.hero-sub {
+  font-size:0.92rem;color:var(--text-dim);
+  max-width:460px;margin:0 auto 32px;
+  opacity:0;animation:fadeUp 0.6s 0.3s forwards;
+  line-height:1.7;
+}
+
+/* Dual-color separator */
+.hero-sep {
+  width:120px;height:2px;
+  background:linear-gradient(90deg, var(--cyan), var(--orange));
+  margin:0 auto 28px;
+  opacity:0;animation:fadeUp 0.6s 0.25s forwards;
+}
+
+.stats-bar {
+  display:flex;justify-content:center;gap:36px;flex-wrap:wrap;
+  opacity:0;animation:fadeUp 0.6s 0.35s forwards;
+}
+.stat-item{text-align:center;}
+.stat-num {
+  font-family:'Share Tech Mono',monospace;font-size:1.8rem;font-weight:900;
+  background:linear-gradient(135deg, var(--cyan), var(--orange));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  line-height:1;
+}
+.stat-label {
+  font-family:'Rajdhani',sans-serif;font-size:0.68rem;
+  letter-spacing:3px;color:var(--text-dim);
+  text-transform:uppercase;margin-top:4px;
+}
+
+/* ── HOW IT WORKS ── */
+.how-section {
+  position:relative;z-index:1;
+  padding:44px 20px 0;max-width:920px;margin:0 auto;
+  opacity:0;animation:fadeUp 0.6s 0.4s forwards;
+}
+.section-title {
+  font-family:'Share Tech Mono',monospace;font-size:0.68rem;
+  letter-spacing:4px;color:var(--text-dim);
+  text-transform:uppercase;margin-bottom:16px;
+  display:flex;align-items:center;gap:12px;
+}
+.section-title::before{
+  content:'//';color:var(--cyan);font-size:0.75rem;
+}
+.section-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);}
+
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+@media(max-width:640px){.steps-grid{grid-template-columns:repeat(2,1fr);}}
+
+.step-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;padding:18px;
+  position:relative;overflow:hidden;
+  transition:all 0.25s;
+}
+.step-card::before {
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg, var(--cyan), var(--orange));
+  opacity:0;transition:opacity 0.3s;
+}
+.step-card:hover{border-color:var(--border-cyan);}
+.step-card:hover::before{opacity:1;}
+.step-card.step-active{border-color:var(--border-cyan);background:rgba(0,229,255,0.03);}
+.step-card.step-active::before{opacity:1;}
+
+.step-num {
+  font-family:'Share Tech Mono',monospace;font-size:2.2rem;
+  color:rgba(0,229,255,0.07);line-height:1;margin-bottom:8px;
+}
+.step-icon{font-size:1.4rem;margin-bottom:8px;}
+.step-title {
+  font-family:'Exo 2',sans-serif;font-weight:700;
+  font-size:0.9rem;color:var(--text);letter-spacing:0.5px;margin-bottom:6px;
+}
+.step-desc{font-size:0.77rem;color:var(--text-dim);line-height:1.5;}
+
+/* ── STEPPER ── */
+.stepper-wrap{position:relative;z-index:1;padding:22px 20px 0;max-width:920px;margin:0 auto;}
+.stepper {
+  display:flex;align-items:center;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;padding:14px 20px;
+  overflow-x:auto;
+  position:relative;
+}
+.stepper::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg, var(--cyan), var(--orange));
+  border-radius:10px 10px 0 0;
+}
+.step-item{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.step-dot {
+  width:28px;height:28px;border-radius:4px;
+  border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Share Tech Mono',monospace;font-size:0.7rem;
+  color:var(--text-dim);transition:all 0.3s;flex-shrink:0;
+}
+.step-dot.done{background:linear-gradient(135deg,var(--cyan),var(--orange));border-color:transparent;color:#070a0e;font-weight:900;}
+.step-dot.active{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 8px rgba(0,229,255,0.3);}
+.step-lbl{font-family:'Exo 2',sans-serif;font-size:0.8rem;font-weight:600;color:var(--text-dim);letter-spacing:0.5px;white-space:nowrap;transition:color 0.3s;}
+.step-lbl.done,.step-lbl.active{color:var(--text);}
+.step-lbl.active{color:var(--cyan);}
+.step-line{flex:1;height:1px;background:var(--border);min-width:16px;margin:0 4px;transition:background 0.3s;}
+.step-line.done{background:linear-gradient(90deg,var(--cyan),var(--orange));}
+
+/* ── SECTION WRAP ── */
+.section-wrap{position:relative;z-index:1;padding:22px 16px 0;max-width:920px;margin:0 auto;}
+@media(min-width:640px){.section-wrap{padding:24px 20px 0;}}
+
+/* ── PACKS ── */
+.packs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+@media(max-width:560px){.packs-grid{grid-template-columns:1fr;}}
+
+.pack-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;padding:20px;
+  cursor:pointer;transition:all 0.25s;
+  position:relative;overflow:hidden;
+}
+.pack-card::after {
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,229,255,0.04),rgba(255,140,0,0.02));
+  opacity:0;transition:opacity 0.3s;
+}
+.pack-card:hover::after,.pack-card.selected::after{opacity:1;}
+.pack-card:hover,.pack-card.selected{border-color:var(--border-cyan);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,229,255,0.1);}
+.pack-card.selected{background:rgba(0,229,255,0.04);}
+
+.pack-popular {
+  position:absolute;top:0;right:0;
+  background:linear-gradient(135deg,var(--cyan),var(--orange));
+  color:#070a0e;font-family:'Share Tech Mono',monospace;
+  font-size:0.48rem;font-weight:900;
+  padding:4px 10px;border-radius:0 10px 0 8px;letter-spacing:1px;
+}
+.pack-check {
+  position:absolute;top:10px;left:10px;
+  width:20px;height:20px;border-radius:4px;
+  background:linear-gradient(135deg,var(--cyan),var(--orange));
+  display:none;align-items:center;justify-content:center;
+  color:#070a0e;font-size:0.65rem;font-weight:900;
+}
+.pack-card.selected .pack-check{display:flex;}
+.pack-games {
+  font-family:'Share Tech Mono',monospace;font-size:2.2rem;font-weight:900;
+  color:var(--cyan);line-height:1;
+}
+.pack-label{font-family:'Rajdhani',sans-serif;font-size:0.8rem;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+.pack-price{font-family:'Exo 2',sans-serif;font-size:1.4rem;font-weight:800;color:var(--text);}
+.pack-bonus{font-size:0.72rem;color:var(--orange);margin-top:5px;font-family:'Rajdhani',sans-serif;letter-spacing:1px;}
+
+.scroll-to-catalog-btn {
+  display:block;margin-top:12px;width:100%;padding:12px;
+  background:linear-gradient(135deg,var(--cyan),var(--orange));
+  color:#070a0e;border:none;border-radius:8px;
+  font-family:'Exo 2',sans-serif;font-weight:800;font-size:0.8rem;
+  letter-spacing:2px;cursor:pointer;transition:all 0.2s;text-transform:uppercase;
+}
+.scroll-to-catalog-btn:hover{opacity:0.85;box-shadow:0 4px 20px rgba(0,229,255,0.3);}
+
+/* ── GIFT ── */
+.gift-section{position:relative;z-index:1;padding:24px 20px 0;max-width:920px;margin:0 auto;}
+.gift-box {
+  background:var(--surface);
+  border:1px solid var(--border-orange);
+  border-radius:10px;padding:20px;
+  position:relative;overflow:hidden;
+}
+.gift-box::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--orange),var(--cyan));
+}
+.gift-daily{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.gift-daily-img{width:60px;height:90px;object-fit:cover;border-radius:6px;border:1px solid var(--border-orange);flex-shrink:0;}
+.gift-daily-img-placeholder{width:60px;height:90px;background:var(--surface2);border-radius:6px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;}
+.gift-daily-label{font-family:'Share Tech Mono',monospace;font-size:0.65rem;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:4px;}
+.gift-daily-name{font-family:'Exo 2',sans-serif;font-weight:700;font-size:1.05rem;color:var(--orange);margin-bottom:4px;}
+
+.gift-tag {
+  display:inline-block;
+  background:linear-gradient(135deg,rgba(255,140,0,0.12),rgba(0,229,255,0.06));
+  border:1px solid var(--border-orange);
+  color:var(--orange);
+  font-family:'Share Tech Mono',monospace;font-size:0.68rem;
+  padding:4px 12px;border-radius:4px;margin-bottom:14px;text-transform:uppercase;letter-spacing:2px;
+}
+.gift-opt-btn {
+  background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);
+  padding:9px 16px;border-radius:6px;
+  font-family:'Exo 2',sans-serif;font-weight:600;font-size:0.88rem;letter-spacing:0.5px;
+  cursor:pointer;transition:all 0.2s;flex:1;text-align:center;min-width:160px;
+}
+.gift-opt-btn:hover{border-color:var(--orange);color:var(--orange);}
+.gift-opt-btn.active{border-color:var(--orange);color:var(--orange);background:rgba(255,140,0,0.07);}
+
+/* ── STICKY SEARCH ── */
+.sticky-search-bar {
+  position:sticky;top:var(--header-h,68px);z-index:40;
+  background:rgba(7,10,14,0.97);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);padding:10px 20px;display:none;
+}
+[data-theme="light"] .sticky-search-bar{background:rgba(238,242,247,0.97);}
+.sticky-search-inner{max-width:920px;margin:0 auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.sticky-search-input {
+  flex:1;min-width:140px;
+  background:var(--surface2);border:1px solid var(--border);color:var(--text);
+  padding:8px 14px;border-radius:6px;
+  font-family:'Exo 2',sans-serif;font-size:0.92rem;outline:none;transition:border-color 0.2s;
+}
+.sticky-search-input:focus{border-color:var(--cyan);}
+.sticky-search-input::placeholder{color:var(--text-dim);}
+
+/* ── CATALOG ── */
+.catalog-wrap{position:relative;z-index:1;padding:24px 16px 80px;max-width:920px;margin:0 auto;}
+@media(min-width:640px){.catalog-wrap{padding:24px 20px 100px;}}
+
+.view-controls{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+.view-btns{display:flex;gap:6px;}
+.view-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);width:34px;height:34px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;font-size:1rem;}
+.view-btn:hover,.view-btn.active{border-color:var(--cyan);color:var(--cyan);}
+.results-count{font-family:'Rajdhani',sans-serif;font-size:0.82rem;color:var(--text-dim);letter-spacing:1px;}
+.results-count span{color:var(--cyan);font-weight:700;}
+
+.games-grid.view-large{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
+.games-grid.view-small{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));}
+.games-grid.view-list{grid-template-columns:1fr;gap:6px;}
+.games-grid.view-list .game-card{flex-direction:row;align-items:center;}
+.games-grid.view-list .game-img-wrap{width:56px;height:80px;flex-shrink:0;aspect-ratio:unset;}
+.games-grid.view-list .game-info{padding:8px 12px;flex:1;}
+.games-grid.view-list .game-name{font-size:0.92rem;margin-bottom:2px;}
+.games-grid.view-list .cupo-add-btn{margin:0 10px 0 auto;white-space:nowrap;flex-shrink:0;}
+.games-grid.view-list .avail-badge{top:auto;left:auto;position:static;display:inline-block;margin-top:4px;}
+.games-grid.view-list .game-selected-badge,.games-grid.view-list .cupo-selected-badge{top:4px;right:4px;}
+.games-grid.view-list .featured-badge{display:none;}
+
+.savings-bar{background:rgba(0,255,136,0.06);border:1px solid rgba(0,255,136,0.2);border-radius:8px;padding:12px 16px;margin-bottom:16px;display:none;font-family:'Rajdhani',sans-serif;font-size:0.9rem;color:var(--green);}
+.savings-bar span{font-weight:700;font-family:'Share Tech Mono',monospace;}
+
+.back-to-top{position:fixed;bottom:90px;right:20px;z-index:99;width:40px;height:40px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--text-dim);font-size:1.1rem;transition:all 0.2s;box-shadow:0 4px 12px rgba(0,0,0,0.4);}
+.back-to-top:hover{border-color:var(--cyan);color:var(--cyan);}
+.back-to-top.visible{display:flex;}
+
+.celebration{position:fixed;inset:0;pointer-events:none;z-index:300;display:flex;align-items:flex-end;justify-content:center;padding-bottom:80px;}
+.celebration-msg{background:var(--dark2);border:1.5px solid var(--cyan);border-radius:10px;padding:12px 20px;font-family:'Exo 2',sans-serif;font-size:0.82rem;font-weight:800;color:var(--cyan);box-shadow:0 0 30px rgba(0,229,255,0.2);opacity:0;transform:translateY(20px);transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);text-align:center;max-width:280px;}
+.celebration-msg.show{opacity:1;transform:translateY(0);}
+@media(min-width:640px){.celebration{align-items:center;padding-bottom:0;}.celebration-msg{padding:20px 32px;font-size:1rem;max-width:400px;}}
+
+.featured-ribbon{position:absolute;top:0;left:0;background:linear-gradient(90deg,var(--cyan),var(--orange));color:#070a0e;font-family:'Exo 2',sans-serif;font-size:0.55rem;font-weight:800;letter-spacing:1px;padding:3px 8px;border-radius:0 0 8px 0;text-transform:uppercase;z-index:2;}
+
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center;}
+.search-input{flex:1;min-width:180px;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;font-family:'Exo 2',sans-serif;font-size:0.92rem;outline:none;transition:border-color 0.2s;}
+.search-input:focus{border-color:var(--cyan);box-shadow:0 0 8px rgba(0,229,255,0.15);}
+.search-input::placeholder{color:var(--text-dim);}
+
+/* GENRE DROPDOWN */
+.genre-dropdown{position:relative;margin-bottom:18px;}
+.genre-dropdown-btn{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:6px;font-family:'Exo 2',sans-serif;font-size:0.92rem;font-weight:600;cursor:pointer;transition:all 0.2s;width:100%;}
+.genre-dropdown-btn:hover,.genre-dropdown-btn.open{border-color:var(--cyan);color:var(--cyan);}
+.genre-dropdown-btn .arrow{transition:transform 0.2s;font-size:0.75rem;}
+.genre-dropdown-btn.open .arrow{transform:rotate(180deg);}
+.genre-dropdown-menu{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface);border:1px solid var(--border-cyan);border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.4),0 0 20px rgba(0,229,255,0.08);z-index:60;max-height:260px;overflow-y:auto;display:none;}
+.genre-dropdown-menu.open{display:block;}
+.genre-option{padding:10px 16px;font-family:'Exo 2',sans-serif;font-size:0.88rem;font-weight:600;color:var(--text-dim);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.genre-option:last-child{border-bottom:none;}
+.genre-option:hover{background:rgba(0,229,255,0.06);color:var(--text);}
+.genre-option.active{color:var(--cyan);background:rgba(0,229,255,0.05);}
+.genre-option .genre-count{font-size:0.7rem;color:var(--text-dim);font-family:'Share Tech Mono',monospace;}
+
+.selection-bar{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;font-family:'Exo 2',sans-serif;}
+.sel-text{font-size:0.88rem;color:var(--text-dim);}
+.sel-count{font-size:1.05rem;font-weight:700;color:var(--cyan);}
+
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px;font-family:'Rajdhani',sans-serif;font-size:0.78rem;letter-spacing:1px;}
+.legend-item{display:flex;align-items:center;gap:5px;color:var(--text-dim);}
+.legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+
+.games-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+@media(min-width:400px){.games-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;}}
+@media(min-width:640px){.games-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}}
+
+.game-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;user-select:none;display:flex;flex-direction:column;}
+.game-card:hover:not(.unavailable):not(.cupo-card){border-color:rgba(0,229,255,0.45);transform:translateY(-2px);}
+.game-card.selected{border-color:var(--cyan);background:rgba(0,229,255,0.05);box-shadow:0 0 16px rgba(0,229,255,0.1);}
+.game-card.unavailable{opacity:0.3;cursor:not-allowed;filter:grayscale(0.8);}
+.game-card.cupo-card{border-color:rgba(168,85,247,0.3);}
+.game-card.cupo-card:hover{border-color:rgba(168,85,247,0.6);transform:translateY(-2px);}
+.game-card.cupo-selected{border-color:var(--cupo);background:rgba(168,85,247,0.06);box-shadow:0 0 14px rgba(168,85,247,0.12);}
+
+.game-img-wrap{width:100%;aspect-ratio:6/9;overflow:hidden;background:var(--surface2);position:relative;}
+.game-img{width:100%;height:100%;object-fit:cover;transition:transform 0.3s;}
+.game-card:hover:not(.unavailable) .game-img{transform:scale(1.06);}
+.game-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:1.8rem;}
+
+.game-selected-badge{position:absolute;top:6px;right:6px;width:22px;height:22px;background:linear-gradient(135deg,var(--cyan),var(--orange));border-radius:4px;display:none;align-items:center;justify-content:center;color:#070a0e;font-size:0.7rem;font-weight:900;}
+.game-card.selected .game-selected-badge{display:flex;}
+.cupo-selected-badge{position:absolute;top:6px;right:6px;width:22px;height:22px;background:var(--cupo);border-radius:4px;display:none;align-items:center;justify-content:center;color:#fff;font-size:0.7rem;font-weight:900;}
+.game-card.cupo-selected .cupo-selected-badge{display:flex;}
+
+.avail-badge{position:absolute;top:6px;left:6px;padding:2px 7px;border-radius:3px;font-family:'Share Tech Mono',monospace;font-size:0.55rem;font-weight:900;letter-spacing:1px;text-transform:uppercase;}
+.badge-ok{background:rgba(0,255,136,0.18);color:var(--green);}
+.badge-instalar{background:rgba(255,140,0,0.18);color:var(--orange);}
+.badge-cupo{background:rgba(168,85,247,0.2);color:var(--cupo);}
+.badge-no{background:rgba(255,61,90,0.15);color:var(--red);}
+.featured-badge{position:absolute;bottom:6px;left:6px;padding:2px 7px;border-radius:3px;font-family:'Exo 2',sans-serif;font-size:0.55rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;background:rgba(255,140,0,0.2);color:var(--orange);}
+
+.game-info{padding:10px;flex:1;}
+.game-name{font-family:'Exo 2',sans-serif;font-weight:600;font-size:0.85rem;color:var(--text);line-height:1.3;margin-bottom:4px;}
+.game-genre{font-size:0.65rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;font-family:'Rajdhani',sans-serif;}
+
+.cupo-add-btn{margin:6px 10px 10px;padding:6px;border-radius:5px;border:1px solid rgba(168,85,247,0.5);background:transparent;color:var(--cupo);font-family:'Exo 2',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.2s;text-align:center;}
+.cupo-add-btn:hover{background:rgba(168,85,247,0.1);border-color:var(--cupo);}
+.cupo-add-btn.added{background:rgba(168,85,247,0.15);border-color:var(--cupo);color:#fff;}
+
+/* ── FAQ ── */
+.faq-section{position:relative;z-index:1;padding:36px 20px 0;max-width:920px;margin:0 auto;}
+.faq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+.faq-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;transition:all 0.2s;position:relative;overflow:hidden;}
+.faq-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--cyan),var(--orange));opacity:0;transition:opacity 0.2s;}
+.faq-card:hover{border-color:var(--border-cyan);}
+.faq-card:hover::before{opacity:1;}
+.faq-icon{font-size:1.4rem;margin-bottom:10px;}
+.faq-q{font-family:'Exo 2',sans-serif;font-weight:700;font-size:0.95rem;color:var(--cyan);margin-bottom:8px;}
+.faq-a{font-size:0.84rem;color:var(--text-dim);line-height:1.6;}
+
+/* ── CART BAR ── */
+.cart-bar{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(7,10,14,0.98);border-top:1px solid var(--border);padding:10px 16px;backdrop-filter:blur(20px);display:flex;align-items:center;gap:10px;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);}
+.cart-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--orange));}
+[data-theme="light"] .cart-bar{background:rgba(238,242,247,0.98);}
+.cart-bar.visible{transform:translateY(0);}
+.cart-info-bar{flex:1;min-width:0;overflow:hidden;}
+.cart-bar-title{font-family:'Share Tech Mono',monospace;font-size:0.6rem;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:2px;}
+.cart-bar-games{font-family:'Exo 2',sans-serif;font-size:0.78rem;color:var(--text);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cart-bar-price{font-family:'Share Tech Mono',monospace;font-size:1.15rem;font-weight:900;background:linear-gradient(135deg,var(--cyan),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap;}
+.cart-bar-slots{font-family:'Rajdhani',sans-serif;font-size:0.68rem;color:var(--text-dim);}
+.cart-bar-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+
+.order-btn{background:linear-gradient(135deg,var(--cyan),var(--orange));color:#070a0e;border:none;padding:10px 16px;border-radius:6px;font-family:'Exo 2',sans-serif;font-weight:800;font-size:0.72rem;letter-spacing:1px;cursor:pointer;transition:all 0.2s;white-space:nowrap;text-transform:uppercase;}
+.order-btn:hover:not(:disabled){opacity:0.85;box-shadow:0 0 20px rgba(0,229,255,0.3);transform:scale(1.02);}
+.order-btn:disabled{background:var(--border);color:var(--text-dim);cursor:not-allowed;transform:none;box-shadow:none;}
+.order-btn.pulse{animation:pulse 1.5s infinite;}
+
+.clear-cart-btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);padding:9px 10px;border-radius:6px;font-family:'Exo 2',sans-serif;font-weight:600;font-size:0.78rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:4px;white-space:nowrap;}
+.clear-cart-btn:hover{border-color:var(--red);color:var(--red);}
+
+@media(min-width:640px){
+  .cart-bar{padding:14px 32px;gap:20px;}
+  .cart-bar-games{font-size:0.88rem;white-space:normal;}
+  .cart-bar-price{font-size:1.4rem;}
+  .order-btn{padding:13px 28px;font-size:0.78rem;letter-spacing:2px;}
+}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,229,255,0.5);}50%{box-shadow:0 0 0 8px rgba(0,229,255,0);}}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.3s;backdrop-filter:blur(12px);}
+.modal-overlay.visible{opacity:1;pointer-events:all;}
+
+.modal{background:var(--dark2);border:1px solid var(--border-cyan);border-radius:12px;padding:32px;max-width:480px;width:100%;box-shadow:0 0 60px rgba(0,229,255,0.1),0 0 30px rgba(255,140,0,0.05);transform:scale(0.9);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);max-height:90vh;overflow-y:auto;position:relative;}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--orange));border-radius:12px 12px 0 0;}
+[data-theme="light"] .modal{background:#fff;}
+.modal-overlay.visible .modal{transform:scale(1);}
+.modal h2{font-family:'Exo 2',sans-serif;font-size:1.3rem;font-weight:800;color:var(--text);margin-bottom:6px;}
+.modal-sub{font-size:0.82rem;color:var(--text-dim);margin-bottom:20px;line-height:1.5;}
+.modal-list{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:18px;}
+.modal-section-label{font-family:'Share Tech Mono',monospace;font-size:0.65rem;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.modal-item{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(26,37,53,0.4);font-family:'Exo 2',sans-serif;font-size:0.9rem;}
+.modal-item:last-child{border-bottom:none;}
+.modal-item-cupo{color:var(--cupo);}
+.modal-total{display:flex;justify-content:space-between;padding-top:10px;margin-top:6px;border-top:1px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:1.05rem;font-weight:700;}
+.modal-total span:last-child{background:linear-gradient(135deg,var(--cyan),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+.modal-input{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:11px 14px;border-radius:6px;font-family:'Exo 2',sans-serif;font-size:0.92rem;width:100%;margin-bottom:14px;outline:none;transition:border-color 0.2s;}
+.modal-input:focus{border-color:var(--cyan);}
+.modal-btns{display:flex;gap:10px;}
+.btn-cancel{flex:1;background:transparent;border:1px solid var(--border);color:var(--text-dim);padding:11px;border-radius:6px;font-family:'Exo 2',sans-serif;font-size:0.92rem;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.btn-cancel:hover{border-color:var(--red);color:var(--red);}
+.btn-send{flex:2;background:linear-gradient(135deg,var(--cyan),var(--orange));border:none;color:#070a0e;padding:11px;border-radius:6px;font-family:'Exo 2',sans-serif;font-size:0.82rem;font-weight:800;cursor:pointer;transition:all 0.2s;letter-spacing:0.5px;display:flex;align-items:center;justify-content:center;gap:7px;}
+.btn-send:hover{opacity:0.88;box-shadow:0 0 20px rgba(0,229,255,0.25);}
+
+/* SHARE MODAL */
+.share-modal{background:var(--dark2);border:1px solid var(--border);border-radius:12px;padding:28px;max-width:380px;width:100%;transform:scale(0.9);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);position:relative;}
+.share-modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--orange));border-radius:12px 12px 0 0;}
+[data-theme="light"] .share-modal{background:#fff;}
+.modal-overlay.visible .share-modal{transform:scale(1);}
+.share-url{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-family:'Share Tech Mono',monospace;font-size:0.82rem;color:var(--text-dim);word-break:break-all;margin:14px 0;}
+.share-btns{display:flex;flex-direction:column;gap:8px;}
+.share-btn{padding:11px;border-radius:6px;font-family:'Exo 2',sans-serif;font-weight:700;font-size:0.92rem;cursor:pointer;transition:all 0.2s;border:1px solid var(--border);background:var(--surface2);color:var(--text);display:flex;align-items:center;justify-content:center;gap:8px;}
+.share-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.share-btn.primary{background:linear-gradient(135deg,var(--cyan),var(--orange));color:#070a0e;border-color:transparent;}
+.share-btn.primary:hover{opacity:0.88;}
+
+.footer{height:40px;}
+.loading-state,.no-pack-msg,.empty-state{text-align:center;padding:50px 20px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:0.88rem;letter-spacing:3px;text-transform:uppercase;}
+.dot{display:inline-block;animation:blink 1.2s infinite;}
+.dot:nth-child(2){animation-delay:0.2s;}
+.dot:nth-child(3){animation-delay:0.4s;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,80%,100%{opacity:1}40%{opacity:0}}
+</style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo-area">
+    <div class="logo-ring">
+      <div class="logo-ring-inner">BG</div>
+    </div>
+    <div class="logo-text-group">
+      <div class="logo-name"><span class="ba">Ba</span><span class="eg">EG</span>
+        <span class="store">Store_</span>
+      </div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="icon-btn" onclick="openShareModal()" title="Compartir">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+    </button>
+    <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Cambiar tema">🌙</button>
+    <button class="cart-btn" onclick="openModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Ver pedido <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </div>
+</header>
+
+<!-- STICKY SEARCH -->
+<div class="sticky-search-bar" id="stickySearch">
+  <div class="sticky-search-inner">
+    <input type="text" class="sticky-search-input" placeholder="⌕  Buscar juego..." id="stickySearchInput" oninput="syncSearch(this)">
+    <span id="stickyGenreLabel" style="font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--cyan);letter-spacing:1px;white-space:nowrap;"></span>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">// Steam · Chile · Acceso offline</div>
+  <div class="hero-sep"></div>
+  <h1>Tu biblioteca<br><span class="hl-cyan">Ba</span><span class="hl-orange">EG</span> al mejor precio</h1>
+  <p class="hero-sub">Juegos importados directo a tu Steam. 100% garantizados y permanentes. Elige tu pack y selecciona los títulos que quieres.</p>
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Juegos en catálogo</div></div>
+    <div class="stat-item"><div class="stat-num" id="statDisp">—</div><div class="stat-label">Disponibles ahora</div></div>
+    <div class="stat-item"><div class="stat-num" id="statGenres">—</div><div class="stat-label">Géneros</div></div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="how-section">
+  <div class="section-title">¿Cómo funciona?</div>
+  <div class="steps-grid">
+    <div class="step-card" id="howStep1">
+      <div class="step-num">01</div>
+      <div class="step-icon">📦</div>
+      <div class="step-title">Elige tu pack</div>
+      <div class="step-desc">Selecciona cuántos juegos quieres: 2, 5 o 10. Todos incluyen 1 juego de regalo.</div>
+    </div>
+    <div class="step-card" id="howStep2">
+      <div class="step-num">02</div>
+      <div class="step-icon">🎮</div>
+      <div class="step-title">Selecciona juegos</div>
+      <div class="step-desc">Busca y elige los títulos que quieres del catálogo. Solo los disponibles son seleccionables.</div>
+    </div>
+    <div class="step-card" id="howStep3">
+      <div class="step-num">03</div>
+      <div class="step-icon">📲</div>
+      <div class="step-title">Envía tu pedido</div>
+      <div class="step-desc">Confirma tu selección. El mensaje se copia automáticamente y se abre el DM de Instagram.</div>
+    </div>
+    <div class="step-card" id="howStep4">
+      <div class="step-num">04</div>
+      <div class="step-icon">⚡</div>
+      <div class="step-title">Recibe tu instalación</div>
+      <div class="step-desc">Coordinamos el pago y realizamos la instalación remota directa a tu biblioteca de Steam.</div>
+    </div>
+  </div>
+</div>
+
+<!-- STEPPER -->
+<div class="stepper-wrap">
+  <div class="stepper">
+    <div class="step-item">
+      <div class="step-dot active" id="dot1">1</div>
+      <div class="step-lbl active" id="lbl1">Pack</div>
+    </div>
+    <div class="step-line" id="line1"></div>
+    <div class="step-item">
+      <div class="step-dot" id="dot2">2</div>
+      <div class="step-lbl" id="lbl2">Juegos</div>
+    </div>
+    <div class="step-line" id="line2"></div>
+    <div class="step-item">
+      <div class="step-dot" id="dot3">3</div>
+      <div class="step-lbl" id="lbl3">Regalo</div>
+    </div>
+    <div class="step-line" id="line3"></div>
+    <div class="step-item">
+      <div class="step-dot" id="dot4">4</div>
+      <div class="step-lbl" id="lbl4">Confirmar</div>
+    </div>
+  </div>
+</div>
+
+<!-- PACKS -->
+<div class="section-wrap">
+  <div class="section-title">Precios de referencia</div>
+  <div class="packs-grid">
+    <div class="pack-card" id="packRef2">
+      <div class="pack-check">✓</div>
+      <div class="pack-games">2</div><div class="pack-label">Juegos</div>
+      <div class="pack-price">$5.000</div><div class="pack-bonus">+ 1 de regalo 🎁</div>
+    </div>
+    <div class="pack-card" id="packRef5" style="position:relative">
+      <div class="pack-check">✓</div>
+      <div class="pack-popular">⭐ MÁS POPULAR</div>
+      <div class="pack-games">5</div><div class="pack-label">Juegos</div>
+      <div class="pack-price">$10.000</div><div class="pack-bonus">+ 1 de regalo 🎁</div>
+    </div>
+    <div class="pack-card" id="packRef10">
+      <div class="pack-check">✓</div>
+      <div class="pack-games">10</div><div class="pack-label">Juegos</div>
+      <div class="pack-price">$15.000</div><div class="pack-bonus">+ 1 de regalo 🎁</div>
+    </div>
+  </div>
+  <p style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;color:var(--text-dim);margin-top:12px;text-align:center;letter-spacing:1px;">
+    👇 Elige tus juegos abajo — el precio se calcula automáticamente
+  </p>
+  <button class="scroll-to-catalog-btn" id="scrollToCatalogBtn" onclick="scrollToCatalog()">
+    ↓ Ir al catálogo
+  </button>
+</div>
+
+<!-- GIFT -->
+<div class="gift-section" id="giftSection">
+  <div class="section-title">Tu juego de regalo 🎁</div>
+  <div class="gift-box">
+    <div class="gift-tag">🎁 Regalo del día — incluido en tu pack</div>
+    <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+      <div class="gift-opt-btn active" id="giftOptDaily" onclick="selectGiftOpt('daily')">🎁 Ver el regalo del día</div>
+      <div class="gift-opt-btn" id="giftOptStore" onclick="selectGiftOpt('store')">🎲 A elección de la tienda</div>
+    </div>
+    <div id="giftPanelDaily">
+      <div class="gift-daily" id="giftDaily">
+        <div class="gift-daily-img-placeholder">🎮</div>
+        <div class="gift-daily-info">
+          <div class="gift-daily-label">Cargando...</div>
+          <div class="gift-daily-name" id="giftDailyName">—</div>
+          <div style="font-size:0.78rem;color:var(--text-dim)">Este juego cambia automáticamente cada día.</div>
+        </div>
+      </div>
+    </div>
+    <div id="giftPanelStore" style="display:none">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;display:flex;align-items:center;gap:12px;">
+        <div style="font-size:2rem;">🎲</div>
+        <div>
+          <div style="font-family:'Exo 2',sans-serif;font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:4px;">BaegStore_ elige por ti</div>
+          <div style="font-size:0.82rem;color:var(--text-dim);line-height:1.5;">Nos contactaremos por Instagram para coordinarlo al momento de la entrega.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CATALOG -->
+<div class="catalog-wrap" id="catalogAnchor">
+  <div class="section-title">Catálogo de juegos</div>
+  <div id="catalogContent">
+    <div class="selection-bar">
+      <span class="sel-text">Juegos seleccionados: <strong id="selCount" style="color:var(--cyan)">0</strong></span>
+      <span style="font-family:'Share Tech Mono',monospace;font-size:1rem;font-weight:900;background:linear-gradient(135deg,var(--cyan),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;" id="autoPrice">$0</span>
+    </div>
+    <div class="savings-bar" id="savingsBar">💰 Ahorras <span id="savingsAmt">$0</span> vs comprar en Steam</div>
+    <div class="view-controls">
+      <div class="results-count" id="resultsCount"></div>
+      <div class="view-btns">
+        <button class="view-btn active" id="vbtnLarge" onclick="setView('large')" title="Grilla grande">⊞</button>
+        <button class="view-btn" id="vbtnSmall" onclick="setView('small')" title="Grilla pequeña">⊟</button>
+        <button class="view-btn" id="vbtnList" onclick="setView('list')" title="Lista">≡</button>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> Disponible</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div> Requiere instalación</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--cupo)"></div> Cupo — $15.000 c/u</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> No disponible</div>
+    </div>
+    <div class="controls">
+      <input type="text" class="search-input" placeholder="⌕  Buscar juego..." id="searchInput" oninput="syncSearch(this)">
+    </div>
+    <div class="genre-dropdown" id="genreDropdown">
+      <button class="genre-dropdown-btn" id="genreDropdownBtn" onclick="toggleGenreDropdown()">
+        <span id="genreDropdownLabel">🎯 Todos los géneros</span>
+        <span class="arrow">▼</span>
+      </button>
+      <div class="genre-dropdown-menu" id="genreDropdownMenu"></div>
+    </div>
+    <div class="games-grid view-large" id="gamesGrid">
+      <div class="loading-state">Cargando catálogo<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="faq-section">
+  <div class="section-title">Preguntas frecuentes</div>
+  <div class="faq-grid">
+    <div class="faq-card">
+      <div class="faq-icon">🔒</div>
+      <div class="faq-q">¿Es seguro?</div>
+      <div class="faq-a">Es completamente seguro ya que todo es instalado de manera local en tu biblioteca de Steam. No necesitamos tu contraseña ni datos sensibles.</div>
+    </div>
+    <div class="faq-card">
+      <div class="faq-icon">🎮</div>
+      <div class="faq-q">¿Funciona online?</div>
+      <div class="faq-a">No, los juegos son para ser jugados de manera local: modo historia, single player y multijugador local. No tienen acceso a servidores online.</div>
+    </div>
+    <div class="faq-card">
+      <div class="faq-icon">🛡️</div>
+      <div class="faq-q">¿Qué pasa si no funciona?</div>
+      <div class="faq-a">Si el juego no te funciona, contáctanos para derivar a una solución. Si no llegamos a ninguna solución, la opción que ofrecemos es un cambio de ese juego.</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer"></div>
+
+<!-- CART BAR -->
+<div class="cart-bar" id="cartBar">
+  <div class="cart-info-bar">
+    <div class="cart-bar-title">// Tu selección</div>
+    <div class="cart-bar-games" id="cartBarGames">—</div>
+  </div>
+  <div class="cart-bar-right">
+    <div style="text-align:right">
+      <div class="cart-bar-price" id="cartBarPrice">$0</div>
+      <div class="cart-bar-slots" id="cartBarSlots"></div>
+    </div>
+    <button class="clear-cart-btn" onclick="clearCart()" title="Limpiar">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+    </button>
+    <button class="order-btn" id="orderBtn" onclick="openModal()" disabled>Pedir →</button>
+  </div>
+</div>
+
+<!-- ORDER MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeOutside(event)">
+  <div class="modal">
+    <h2>Confirmar pedido</h2>
+    <p class="modal-sub">Revisá tu selección. Al confirmar se copiará el mensaje y se abrirá Instagram.</p>
+    <div class="modal-list" id="modalList"></div>
+    <input type="text" class="modal-input" id="customerName" placeholder="Tu nombre o @usuario de Instagram...">
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-send" onclick="sendOrder()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        Copiar y abrir Instagram
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="modal-overlay" id="shareOverlay" onclick="closeShareOutside(event)">
+  <div class="share-modal">
+    <h2 style="font-family:'Exo 2',sans-serif;font-size:1.15rem;font-weight:800;color:var(--text);margin-bottom:6px;">Compartir tienda</h2>
+    <p style="font-size:0.82rem;color:var(--text-dim);margin-bottom:4px;">Comparte BaegStore_ con tus amigos gamers 🎮</p>
+    <div class="share-url" id="shareUrl"></div>
+    <div class="share-btns">
+      <button class="share-btn primary" onclick="copyShareUrl()">📋 Copiar enlace</button>
+      <button class="share-btn" onclick="shareWhatsApp()">💬 Compartir por WhatsApp</button>
+      <button class="share-btn" onclick="closeShareModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Volver arriba">↑</button>
+<div class="celebration" id="celebration"><div class="celebration-msg" id="celebrationMsg"></div></div>
+
+<script>
+const INSTAGRAM_USER = 'baegstore_';
+const SHEET_ID = '1pSrjAXJoX6rJR-sazsBGWCqAPb3sOI75Z7hAEeRrLRM';
+const SHEET_NAME = 'Hoja1';
+const CUPO_PRICE = 15000;
+
+const PACK_PRICES = [{min:1,max:2,price:5000},{min:3,max:5,price:10000},{min:6,max:10,price:15000}];
+function getAutoPack(n){
+  if(n===0) return {price:0,label:'',slots:0};
+  if(n<=2)  return {price:5000, label:'Pack 2 juegos',  slots:2};
+  if(n<=5)  return {price:10000,label:'Pack 5 juegos',  slots:5};
+  return        {price:15000,label:'Pack 10 juegos', slots:10};
+}
+function updateAutoPrice(){
+  const n=packGames.length;
+  const pack=getAutoPack(n);
+  currentPack=pack.slots||Math.max(n,1);
+  currentPrice=pack.price;
+  const el=document.getElementById('autoPrice');
+  if(el) el.textContent=pack.price>0?'$'+pack.price.toLocaleString('es-CL'):'$0';
+  ['packRef2','packRef5','packRef10'].forEach(id=>{
+    const card=document.getElementById(id);
+    if(card) card.classList.remove('selected');
+  });
+  if(n>=1&&n<=2)  document.getElementById('packRef2')?.classList.add('selected');
+  else if(n<=5)   document.getElementById('packRef5')?.classList.add('selected');
+  else if(n<=10)  document.getElementById('packRef10')?.classList.add('selected');
+}
+
+let allGames=[], packGames=[], cupoGames=[];
+let currentPack=null, currentPrice=0, activeFilter='Todos';
+let dailyGift=null;
+let currentView='large';
+const STEAM_AVG_PRICE=30000;
+
+function saveSession(){
+  try{sessionStorage.setItem('scl_pack',JSON.stringify({pack:currentPack,price:currentPrice}));
+  sessionStorage.setItem('scl_packGames',JSON.stringify(packGames));
+  sessionStorage.setItem('scl_cupoGames',JSON.stringify(cupoGames));}catch(e){}
+}
+function loadSession(){
+  try{
+    const p=sessionStorage.getItem('scl_pack');
+    if(p){const d=JSON.parse(p);if(d.pack){currentPack=d.pack;currentPrice=d.price;}}
+    const pg=sessionStorage.getItem('scl_packGames');
+    if(pg) packGames=JSON.parse(pg);
+    const cg=sessionStorage.getItem('scl_cupoGames');
+    if(cg) cupoGames=JSON.parse(cg);
+    if(currentPack){
+      updateSelBar();updateCart();updateStepper();
+    }
+  }catch(e){}
+}
+
+window.addEventListener('scroll',()=>{
+  const btn=document.getElementById('backToTop');
+  if(window.scrollY>400) btn.classList.add('visible');
+  else btn.classList.remove('visible');
+},{passive:true});
+
+function setView(v){
+  currentView=v;
+  const grid=document.getElementById('gamesGrid');
+  grid.className='games-grid view-'+v;
+  ['large','small','list'].forEach(x=>document.getElementById('vbtn'+x.charAt(0).toUpperCase()+x.slice(1))?.classList.toggle('active',x===v));
+}
+
+function toggleTheme(){
+  const h=document.documentElement;
+  const isDark=h.getAttribute('data-theme')==='dark';
+  h.setAttribute('data-theme',isDark?'light':'dark');
+  document.getElementById('themeBtn').textContent=isDark?'☀️':'🌙';
+}
+
+const catalogAnchor=document.getElementById('catalogAnchor');
+const stickySearch=document.getElementById('stickySearch');
+function getHeaderH(){ return document.querySelector('header').getBoundingClientRect().height; }
+function updateHeaderVar(){ document.documentElement.style.setProperty('--header-h', getHeaderH()+'px'); }
+updateHeaderVar();
+window.addEventListener('resize', updateHeaderVar, {passive:true});
+window.addEventListener('scroll',()=>{
+  if(!currentPack){stickySearch.style.display='none';return;}
+  const hh=getHeaderH();
+  const rect=catalogAnchor.getBoundingClientRect();
+  stickySearch.style.display=rect.top<hh+10?'block':'none';
+},{ passive:true });
+
+function syncSearch(src){
+  const val=src.value;
+  document.getElementById('searchInput').value=val;
+  document.getElementById('stickySearchInput').value=val;
+  renderGames(filtered());
+}
+
+function scrollToCatalog(){
+  document.getElementById('catalogAnchor').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function getAvailType(avail){
+  const a=avail.toUpperCase();
+  if(a.includes('NO DISP')||a==='NO DISPONIBLE') return 'no';
+  if(a.includes('CUPO')) return 'cupo';
+  if(a.includes('INSTA')) return 'instalar';
+  return 'ok';
+}
+
+function seededRandom(seed){
+  return function(){
+    seed|=0; seed=seed+0x6D2B79F5|0;
+    let t=Math.imul(seed^seed>>>15,1|seed);
+    t=t+Math.imul(t^t>>>7,61|t)^t;
+    return ((t^t>>>14)>>>0)/4294967296;
+  };
+}
+function computeDailyGift(pool){
+  if(!pool.length) return null;
+  const today=new Date();
+  const seed=today.getFullYear()*10000+(today.getMonth()+1)*100+today.getDate();
+  const rand=seededRandom(seed);
+  const sorted=[...pool].sort((a,b)=>{
+    const ia=Number(a.id)||0, ib=Number(b.id)||0;
+    if(ia&&ib) return ia-ib;
+    return a.name.localeCompare(b.name);
+  });
+  const shuffled=sorted.sort(()=>rand()-0.5);
+  return shuffled[0];
+}
+
+function renderDailyGift(){
+  const pool=allGames.filter(g=>g.availType==='ok');
+  dailyGift=computeDailyGift(pool);
+  if(!dailyGift) return;
+  renderGiftDisplay();
+}
+function renderGiftDisplay(){
+  if(!dailyGift) return;
+  const area=document.getElementById('giftDaily');
+  if(!area) return;
+  area.innerHTML=`
+    ${dailyGift.image
+      ?`<img class="gift-daily-img" src="${dailyGift.image}" alt="${dailyGift.name}" onerror="this.style.display='none'">`
+      :`<div class="gift-daily-img-placeholder">🎮</div>`}
+    <div class="gift-daily-info">
+      <div class="gift-daily-label">// Regalo de hoy</div>
+      <div class="gift-daily-name">${dailyGift.name}</div>
+      <div style="color:var(--text-dim);font-size:0.78rem">Se actualiza automáticamente cada día.</div>
+    </div>`;
+}
+
+let giftChoice='daily';
+function selectGiftOpt(opt){
+  giftChoice=opt;
+  document.getElementById('giftOptDaily').classList.toggle('active',opt==='daily');
+  document.getElementById('giftOptStore').classList.toggle('active',opt==='store');
+  document.getElementById('giftPanelDaily').style.display=opt==='daily'?'block':'none';
+  document.getElementById('giftPanelStore').style.display=opt==='store'?'block':'none';
+}
+
+async function loadGames(){
+  document.getElementById('gamesGrid').innerHTML=`<div class="loading-state">Cargando catálogo<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>`;
+  try{
+    const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+    const res=await fetch(url);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const text=await res.text();
+    const rows=parseCSV(text);
+    if(rows.length<2){showError('Catálogo vacío.');return;}
+    const headers=rows[0].map(h=>h.trim().toLowerCase());
+    const dispIdx=headers.findIndex(h=>h.includes('disponib'));
+    const nameIdx=headers.findIndex(h=>h.includes('juego')||h.includes('nombre')||h.includes('name'));
+    const imgIdx =headers.findIndex(h=>h.includes('imagen')||h.includes('image')||h.includes('img'));
+    const genIdx =headers.findIndex(h=>h.includes('genero')||h.includes('género')||h.includes('genre')||h.includes('categ'));
+    const featIdx=headers.findIndex(h=>h.includes('destac')||h.includes('featured'));
+    const idIdx=headers.findIndex(h=>h==='id'||h==='#'||h==='num');
+    allGames=rows.slice(1).filter(r=>r[nameIdx]&&r[nameIdx].trim()).map((r,i)=>({
+      id:idIdx>=0&&r[idIdx]?parseInt(r[idIdx])||i+1:i+1,
+      name:(r[nameIdx]||'').trim(),
+      image:imgIdx>=0&&r[imgIdx]?r[imgIdx].trim():'',
+      genre:genIdx>=0&&r[genIdx]?r[genIdx].trim():'General',
+      availability:dispIdx>=0&&r[dispIdx]?r[dispIdx].trim():'DISPONIBLE',
+      availType:getAvailType(dispIdx>=0&&r[dispIdx]?r[dispIdx].trim():'DISPONIBLE'),
+      featured:featIdx>=0&&r[featIdx]?r[featIdx].trim().toUpperCase()==='SI':false
+    }));
+    updateStats();renderFilterBar();renderGames(filtered());renderDailyGift();
+  }catch(e){
+    showError('No se pudo cargar el catálogo. Verifica que el Sheet sea público.');
+  }
+}
+
+function updateStats(){
+  const total=allGames.length;
+  const disp=allGames.filter(g=>g.availType!=='no').length;
+  const genres=new Set(allGames.map(g=>g.genre).filter(Boolean)).size;
+  animateNum('statTotal',total);animateNum('statDisp',disp);animateNum('statGenres',genres);
+}
+function animateNum(id,target){
+  const el=document.getElementById(id);
+  let v=0; const step=Math.max(1,Math.ceil(target/40));
+  const iv=setInterval(()=>{v=Math.min(v+step,target);el.textContent=v;if(v>=target)clearInterval(iv);},30);
+}
+
+function parseCSV(text){
+  const rows=[];
+  for(const line of text.split('\n')){
+    if(!line.trim()) continue;
+    const cols=[];let cur='',inQ=false;
+    for(let i=0;i<line.length;i++){
+      const c=line[i];
+      if(c==='"') inQ=!inQ;
+      else if(c===','&&!inQ){cols.push(cur);cur='';}
+      else cur+=c;
+    }
+    cols.push(cur);
+    rows.push(cols.map(c=>c.replace(/^"|"$/g,'').trim()));
+  }
+  return rows;
+}
+
+function renderFilterBar(){
+  const menu=document.getElementById('genreDropdownMenu');
+  if(!menu) return;
+  const genres=['Todos',...new Set(allGames.map(g=>g.genre).filter(Boolean))].sort();
+  menu.innerHTML='';
+  genres.forEach(g=>{
+    const count=g==='Todos'?allGames.length:allGames.filter(x=>x.genre===g).length;
+    const div=document.createElement('div');
+    div.className='genre-option'+(g==='Todos'?' active':'');
+    div.dataset.genre=g;
+    div.innerHTML=`${g}<span class="genre-count">${count}</span>`;
+    div.addEventListener('click',()=>setFilter(g));
+    menu.appendChild(div);
+  });
+  updateGenreLabel('Todos');
+}
+function toggleGenreDropdown(){
+  const btn=document.getElementById('genreDropdownBtn');
+  const menu=document.getElementById('genreDropdownMenu');
+  if(!btn||!menu) return;
+  const isOpen=menu.classList.contains('open');
+  btn.classList.toggle('open',!isOpen);
+  menu.classList.toggle('open',!isOpen);
+}
+document.addEventListener('click',function(e){
+  const dd=document.getElementById('genreDropdown');
+  if(dd&&!dd.contains(e.target)){
+    document.getElementById('genreDropdownBtn')?.classList.remove('open');
+    document.getElementById('genreDropdownMenu')?.classList.remove('open');
+  }
+});
+function updateGenreLabel(cat){
+  const lbl=document.getElementById('genreDropdownLabel');
+  if(lbl) lbl.textContent=cat==='Todos'?'🎯 Todos los géneros':'🎯 '+cat;
+  const sticky=document.getElementById('stickyGenreLabel');
+  if(sticky) sticky.textContent=cat==='Todos'?'Todos los géneros':cat;
+}
+function setFilter(cat){
+  activeFilter=cat;
+  document.querySelectorAll('.genre-option').forEach(o=>o.classList.toggle('active',o.dataset.genre===cat));
+  updateGenreLabel(cat);
+  document.getElementById('genreDropdownBtn')?.classList.remove('open');
+  document.getElementById('genreDropdownMenu')?.classList.remove('open');
+  renderGames(filtered());
+}
+function filtered(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  return allGames.filter(g=>g.name.toLowerCase().includes(q)&&(activeFilter==='Todos'||g.genre===activeFilter));
+}
+
+function gameCardHTML(g){
+  const t=g.availType;
+  const isPackSel=packGames.some(s=>s.name===g.name);
+  const isCupoSel=cupoGames.some(s=>s.name===g.name);
+  const sn=g.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  const sg=g.genre.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  const si=g.image.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  const imgHTML=g.image?`<img class="game-img" src="${g.image}" alt="${g.name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:'' ;
+  const ph=`<div class="game-img-placeholder" ${g.image?'style="display:none"':''}>🎮</div>`;
+  const featBadge=g.featured?`<div class="featured-ribbon">⭐ Top</div>`:'';
+
+  if(t==='no') return `<div class="game-card unavailable">
+    <div class="game-img-wrap">${imgHTML}${ph}<div class="avail-badge badge-no">No disp.</div></div>
+    <div class="game-info"><div class="game-name">${g.name}</div><div class="game-genre">${g.genre}</div></div>
+  </div>`;
+
+  if(t==='cupo') return `<div class="game-card cupo-card ${isCupoSel?'cupo-selected':''}" onclick="toggleCupo('${sn}','${sg}','${si}')">
+    <div class="game-img-wrap">${imgHTML}${ph}<div class="cupo-selected-badge">✓</div><div class="avail-badge badge-cupo">Cupo</div>${featBadge}</div>
+    <div class="game-info"><div class="game-name">${g.name}</div><div class="game-genre">${g.genre}</div></div>
+    <button class="cupo-add-btn ${isCupoSel?'added':''}" onclick="event.stopPropagation();toggleCupo('${sn}','${sg}','${si}')">${isCupoSel?'✓ Agregado':`+ Agregar $${CUPO_PRICE.toLocaleString('es-CL')}`}</button>
+  </div>`;
+
+  const badgeCls={ok:'badge-ok',instalar:'badge-instalar'}[t]||'badge-ok';
+  const badgeLbl={ok:'OK',instalar:'Instalar'}[t]||'OK';
+  return `<div class="game-card ${isPackSel?'selected':''}" onclick="togglePack('${sn}','${sg}','${si}','${t}')">
+    <div class="game-img-wrap">${imgHTML}${ph}<div class="game-selected-badge">✓</div><div class="avail-badge ${badgeCls}">${badgeLbl}</div>${featBadge}</div>
+    <div class="game-info"><div class="game-name">${g.name}</div><div class="game-genre">${g.genre}</div></div>
+  </div>`;
+}
+
+function renderGames(games){
+  const grid=document.getElementById('gamesGrid');
+  if(!games.length){grid.innerHTML=`<div class="empty-state">No se encontraron juegos</div>`;updateResultsCount(0);return;}
+  const sorted=[...games.filter(g=>g.featured),...games.filter(g=>!g.featured)];
+  grid.className='games-grid view-'+currentView;
+  grid.innerHTML=sorted.map(g=>gameCardHTML(g)).join('');
+  updateResultsCount(games.length);
+  updateSavings();
+}
+function updateResultsCount(n){
+  const el=document.getElementById('resultsCount');
+  if(el) el.innerHTML=`Mostrando <span>${n}</span> juego${n!==1?'s':''}`;
+}
+function updateSavings(){
+  const totalPackGames=packGames.length+cupoGames.length;
+  if(totalPackGames===0){document.getElementById('savingsBar').style.display='none';return;}
+  const steamTotal=totalPackGames*STEAM_AVG_PRICE;
+  const myTotal=currentPrice+(cupoGames.length*CUPO_PRICE);
+  const saved=steamTotal-myTotal;
+  if(saved>0){document.getElementById('savingsBar').style.display='block';document.getElementById('savingsAmt').textContent='$'+saved.toLocaleString('es-CL');}
+  else{document.getElementById('savingsBar').style.display='none';}
+}
+function showError(msg){document.getElementById('gamesGrid').innerHTML=`<div class="empty-state">${msg}</div>`;}
+
+function togglePack(name,genre,image,availType){
+  const idx=packGames.findIndex(g=>g.name===name);
+  if(idx>=0){packGames.splice(idx,1);}
+  else{
+    if(packGames.length>=10) return;
+    packGames.push({name,genre,image,availType});
+    const n=packGames.length;
+    if(n===2||n===5||n===10) setTimeout(showCelebration,200);
+  }
+  updateAutoPrice();updateSelBar();renderGames(filtered());updateCart();updateStepper();saveSession();
+}
+function toggleCupo(name,genre,image){
+  const idx=cupoGames.findIndex(g=>g.name===name);
+  if(idx>=0) cupoGames.splice(idx,1);
+  else cupoGames.push({name,genre,image});
+  renderGames(filtered());updateCart();saveSession();
+}
+function updateSelBar(){
+  const el=document.getElementById('selCount');
+  if(el) el.textContent=packGames.length;
+  updateAutoPrice();
+}
+
+function updateStepper(){
+  const packDone=packGames.length>0;
+  const gamesDone=packGames.length>=2;
+  function setState(dotId,lblId,state){
+    const dot=document.getElementById(dotId);const lbl=document.getElementById(lblId);
+    dot.className='step-dot';lbl.className='step-lbl';
+    if(state==='done'){dot.classList.add('done');lbl.classList.add('done');dot.textContent='✓';}
+    else if(state==='active'){dot.classList.add('active');lbl.classList.add('active');}
+  }
+  function setLine(id,done){document.getElementById(id).className='step-line'+(done?' done':'');}
+  if(!packDone){setState('dot1','lbl1','active');setState('dot2','lbl2','');setState('dot3','lbl3','');setState('dot4','lbl4','');setLine('line1',false);setLine('line2',false);setLine('line3',false);}
+  else if(!gamesDone){setState('dot1','lbl1','done');setState('dot2','lbl2','active');setState('dot3','lbl3','');setState('dot4','lbl4','');setLine('line1',true);setLine('line2',false);setLine('line3',false);}
+  else{setState('dot1','lbl1','done');setState('dot2','lbl2','done');setState('dot3','lbl3','done');setState('dot4','lbl4','active');setLine('line1',true);setLine('line2',true);setLine('line3',true);}
+  if(packDone) document.getElementById('howStep1').classList.add('step-active');
+  if(gamesDone) document.getElementById('howStep2').classList.add('step-active');
+}
+
+function updateCart(){
+  const total=currentPrice+(cupoGames.length*CUPO_PRICE);
+  const totalItems=packGames.length+cupoGames.length;
+  document.getElementById('cartCount').textContent=totalItems;
+  document.getElementById('cartBarPrice').textContent=`$${total.toLocaleString('es-CL')}`;
+  let slotsText=`${packGames.length}/${currentPack||0} del pack`;
+  if(cupoGames.length>0) slotsText+=` + ${cupoGames.length} cupo`;
+  document.getElementById('cartBarSlots').textContent=slotsText;
+  if(totalItems>0){
+    document.getElementById('cartBar').classList.add('visible');
+    document.getElementById('cartBarGames').textContent=[...packGames,...cupoGames].map(g=>g.name).join(', ');
+  }else{document.getElementById('cartBar').classList.remove('visible');}
+  updateSavings();
+  const btn=document.getElementById('orderBtn');
+  const packReady=currentPack&&packGames.length>=currentPack;
+  btn.disabled=!packReady&&cupoGames.length===0;
+  if(packReady){btn.classList.add('pulse');btn.textContent='Pedir por Instagram →';}
+  else{btn.classList.remove('pulse');btn.textContent=currentPack?`Selecciona ${currentPack-packGames.length} más →`:'Selecciona un pack →';}
+}
+
+function openModal(){
+  const totalItems=packGames.length+cupoGames.length;
+  if(totalItems===0) return;
+  const total=currentPrice+(cupoGames.length*CUPO_PRICE);
+  let html='';
+  if(packGames.length>0){
+    html+=`<div class="modal-section-label">// pack ${currentPack} juegos — $${currentPrice.toLocaleString('es-CL')}</div>`;
+    html+=packGames.map(g=>`<div class="modal-item"><span>${g.name}</span><span style="color:var(--text-dim);font-size:0.78rem">${g.genre}</span></div>`).join('');
+  }
+  if(cupoGames.length>0){
+    html+=`<div class="modal-section-label" style="margin-top:12px">// juegos con cupo</div>`;
+    html+=cupoGames.map(g=>`<div class="modal-item"><span class="modal-item-cupo">${g.name}</span><span style="color:var(--cupo);font-size:0.78rem">$${CUPO_PRICE.toLocaleString('es-CL')}</span></div>`).join('');
+  }
+  const giftDisplay=giftChoice==='store'?'A elección de BaegStore_':(dailyGift?dailyGift.name:'A confirmar');
+  html+=`<div class="modal-section-label" style="margin-top:12px">// regalo</div>`;
+  html+=`<div class="modal-item"><span style="color:var(--orange)">${giftDisplay}</span></div>`;
+  html+=`<div class="modal-total"><span>Total</span><span>$${total.toLocaleString('es-CL')}</span></div>`;
+  document.getElementById('modalList').innerHTML=html;
+  document.getElementById('modalOverlay').classList.add('visible');
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('visible');}
+function closeOutside(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
+
+function clearCart(){
+  packGames=[];cupoGames=[];
+  updateSelBar();renderGames(filtered());updateCart();updateStepper();saveSession();
+  showToast('🗑️ Carrito limpiado');
+}
+function showCelebration(){
+  const el=document.getElementById('celebrationMsg');
+  el.textContent='🎉 ¡Pack completo! Ahora confirma tu pedido';
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2800);
+}
+function sendOrder(){
+  const name=document.getElementById('customerName').value.trim();
+  const total=currentPrice+(cupoGames.length*CUPO_PRICE);
+  let msg=`Hola! Quiero hacer un pedido en BaegStore_ 🎮\n`;
+  if(packGames.length>0){msg+=`\n📦 Pack ${currentPack} juegos — $${currentPrice.toLocaleString('es-CL')}\n`;msg+=packGames.map(g=>`• ${g.name}`).join('\n');}
+  if(cupoGames.length>0){msg+=`\n\n🔮 Juegos con cupo — $${CUPO_PRICE.toLocaleString('es-CL')} c/u\n`;msg+=cupoGames.map(g=>`• ${g.name}`).join('\n');}
+  const giftMsg=giftChoice==='store'?'A elección de BaegStore_':(dailyGift?dailyGift.name:'A confirmar');
+  msg+=`\n\n🎁 Regalo: ${giftMsg}`;
+  msg+=`\n\n💰 Total: $${total.toLocaleString('es-CL')}`;
+  msg+=`\n👤 ${name||'Sin nombre'}`;
+  navigator.clipboard.writeText(msg).then(()=>{
+    showToast('✅ Mensaje copiado — pégalo en el DM de Instagram');
+    setTimeout(()=>window.open(`https://ig.me/m/${INSTAGRAM_USER}`,'_blank'),800);
+  }).catch(()=>{
+    showToast('📋 Copia el mensaje y pégalo en Instagram');
+    window.open(`https://ig.me/m/${INSTAGRAM_USER}`,'_blank');
+  });
+  closeModal();
+}
+
+function openShareModal(){
+  document.getElementById('shareUrl').textContent=window.location.href;
+  document.getElementById('shareOverlay').classList.add('visible');
+}
+function closeShareModal(){document.getElementById('shareOverlay').classList.remove('visible');}
+function closeShareOutside(e){if(e.target===document.getElementById('shareOverlay'))closeShareModal();}
+function copyShareUrl(){
+  navigator.clipboard.writeText(window.location.href).then(()=>showToast('✅ Enlace copiado'));
+  closeShareModal();
+}
+function shareWhatsApp(){
+  const msg=`¡Mira esta tienda de juegos para Steam! BaegStore_ 🎮 ${window.location.href}`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');
+  closeShareModal();
+}
+function showToast(msg){
+  const e=document.getElementById('toast');if(e)e.remove();
+  const t=document.createElement('div');t.id='toast';t.textContent=msg;
+  t.style.cssText=`position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--dark2);border:1px solid var(--cyan);color:#fff;padding:12px 24px;border-radius:8px;font-family:'Exo 2',sans-serif;font-weight:600;font-size:0.92rem;z-index:999;box-shadow:0 0 20px rgba(0,229,255,0.2);white-space:nowrap;`;
+  document.body.appendChild(t);setTimeout(()=>t.remove(),4000);
+}
+
+window.addEventListener('load',()=>{
+  loadSession();
+  loadGames();
+});
+</script>
+</body>
+</html>
