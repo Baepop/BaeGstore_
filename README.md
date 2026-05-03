@@ -1,2 +1,0 @@
-# BaeGstore_
-Web Server
